@@ -10,12 +10,26 @@
   const monthTotalEl = document.getElementById('monthTotal');
   const weekRangeEl = document.getElementById('weekRange');
   const monthRangeEl = document.getElementById('monthRange');
+  const weekLabelEl = document.getElementById('weekLabel');
+  const monthLabelEl = document.getElementById('monthLabel');
+  const weekBadgeEl = document.getElementById('weekBadge');
+  const monthBadgeEl = document.getElementById('monthBadge');
+  const weekCard = document.getElementById('weekCard');
+  const monthCard = document.getElementById('monthCard');
+  const weekPrevBtn = document.getElementById('weekPrev');
+  const weekNextBtn = document.getElementById('weekNext');
+  const monthPrevBtn = document.getElementById('monthPrev');
+  const monthNextBtn = document.getElementById('monthNext');
+  const backTodayWrap = document.getElementById('backTodayWrap');
+  const backTodayBtn = document.getElementById('backTodayBtn');
   const todayDateEl = document.getElementById('todayDate');
   const todayValueEl = document.getElementById('todayValue');
   const logTodayBtn = document.getElementById('logTodayBtn');
   const historyList = document.getElementById('historyList');
   const emptyState = document.getElementById('emptyState');
   const addPastBtn = document.getElementById('addPastBtn');
+  const historyScopeToggle = document.getElementById('historyScopeToggle');
+  const filterButtons = document.querySelectorAll('.segment[data-filter]');
 
   const modalOverlay = document.getElementById('modalOverlay');
   const modalTitle = document.getElementById('modalTitle');
@@ -33,6 +47,12 @@
   let editingDate = null;
   /** @type {1 | -1} */
   let entrySign = 1;
+  /** Weeks relative to current (0 = this week, -1 = previous, …) */
+  let weekOffset = 0;
+  /** Months relative to current (0 = this month, -1 = previous, …) */
+  let monthOffset = 0;
+  /** @type {'week' | 'month' | 'all'} */
+  let historyFilter = 'week';
 
   // ——— Storage ———
   function loadEntries() {
@@ -72,6 +92,16 @@
     return toDateKey(new Date());
   }
 
+  function addDays(d, n) {
+    const out = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    out.setDate(out.getDate() + n);
+    return out;
+  }
+
+  function addMonths(d, n) {
+    return new Date(d.getFullYear(), d.getMonth() + n, 1);
+  }
+
   /** Israeli week: Sunday (0) – Saturday (6) */
   function getWeekBounds(ref = new Date()) {
     const d = new Date(ref.getFullYear(), ref.getMonth(), ref.getDate());
@@ -87,6 +117,14 @@
     const start = new Date(ref.getFullYear(), ref.getMonth(), 1);
     const end = new Date(ref.getFullYear(), ref.getMonth() + 1, 0);
     return { start, end };
+  }
+
+  function selectedWeekRef() {
+    return addDays(new Date(), weekOffset * 7);
+  }
+
+  function selectedMonthRef() {
+    return addMonths(new Date(), monthOffset);
   }
 
   const HEB_DAYS = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
@@ -134,6 +172,10 @@
     return entries.find((e) => e.date === dateKey) || null;
   }
 
+  function isBrowsingPast() {
+    return weekOffset !== 0 || monthOffset !== 0;
+  }
+
   // ——— UI render ———
   function setTotalEl(el, value) {
     el.textContent = formatSigned(value);
@@ -141,16 +183,42 @@
   }
 
   function renderTotals() {
-    const now = new Date();
-    const week = getWeekBounds(now);
-    const month = getMonthBounds(now);
+    const week = getWeekBounds(selectedWeekRef());
+    const monthRef = selectedMonthRef();
+    const month = getMonthBounds(monthRef);
     const weekSum = sumInRange(week.start, week.end);
     const monthSum = sumInRange(month.start, month.end);
 
     setTotalEl(weekTotalEl, weekSum);
     setTotalEl(monthTotalEl, monthSum);
     weekRangeEl.textContent = formatShortRange(week.start, week.end);
-    monthRangeEl.textContent = `${HEB_MONTHS[now.getMonth()]} ${now.getFullYear()}`;
+    monthRangeEl.textContent = `${HEB_MONTHS[monthRef.getMonth()]} ${monthRef.getFullYear()}`;
+
+    if (weekOffset === 0) {
+      weekLabelEl.textContent = 'סה״כ השבוע';
+      weekBadgeEl.hidden = true;
+      weekCard.classList.remove('is-past');
+    } else {
+      weekLabelEl.textContent = 'סה״כ שבוע';
+      weekBadgeEl.hidden = false;
+      weekBadgeEl.textContent = weekOffset === -1 ? 'שבוע קודם' : `לפני ${-weekOffset} שבועות`;
+      weekCard.classList.add('is-past');
+    }
+
+    if (monthOffset === 0) {
+      monthLabelEl.textContent = 'סה״כ החודש';
+      monthBadgeEl.hidden = true;
+      monthCard.classList.remove('is-past');
+    } else {
+      monthLabelEl.textContent = 'סה״כ חודש';
+      monthBadgeEl.hidden = false;
+      monthBadgeEl.textContent = monthOffset === -1 ? 'חודש קודם' : `לפני ${-monthOffset} חודשים`;
+      monthCard.classList.add('is-past');
+    }
+
+    weekNextBtn.disabled = weekOffset >= 0;
+    monthNextBtn.disabled = monthOffset >= 0;
+    backTodayWrap.hidden = !isBrowsingPast();
   }
 
   function renderToday() {
@@ -168,13 +236,46 @@
     }
   }
 
+  function filteredEntries() {
+    if (historyFilter === 'all') return [...entries];
+    if (historyFilter === 'week') {
+      const week = getWeekBounds(selectedWeekRef());
+      return entries.filter((e) => inRange(e.date, week.start, week.end));
+    }
+    const month = getMonthBounds(selectedMonthRef());
+    return entries.filter((e) => inRange(e.date, month.start, month.end));
+  }
+
+  function renderHistoryFilters() {
+    filterButtons.forEach((btn) => {
+      const active = btn.dataset.filter === historyFilter;
+      btn.classList.toggle('active', active);
+      btn.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+    if (historyFilter === 'all') {
+      historyScopeToggle.textContent = 'רק השבוע הנבחר';
+    } else {
+      historyScopeToggle.textContent = 'הצג הכל';
+    }
+  }
+
   function renderHistory() {
-    const sorted = [...entries].sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+    renderHistoryFilters();
+    const sorted = filteredEntries().sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
     historyList.innerHTML = '';
 
     if (sorted.length === 0) {
       historyList.classList.add('is-empty');
       emptyState.classList.add('visible');
+      if (entries.length === 0) {
+        emptyState.textContent = 'אין רישומים עדיין. לחצו על «רישום היום» להתחלה.';
+      } else if (historyFilter === 'week') {
+        emptyState.textContent = 'אין רישומים בשבוע הנבחר.';
+      } else if (historyFilter === 'month') {
+        emptyState.textContent = 'אין רישומים בחודש הנבחר.';
+      } else {
+        emptyState.textContent = 'אין רישומים להצגה.';
+      }
       return;
     }
 
@@ -218,6 +319,12 @@
     renderTotals();
     renderToday();
     renderHistory();
+  }
+
+  function resetToToday() {
+    weekOffset = 0;
+    monthOffset = 0;
+    render();
   }
 
   // ——— Modal ———
@@ -272,6 +379,42 @@
   }
 
   // ——— Events ———
+  weekPrevBtn.addEventListener('click', () => {
+    weekOffset -= 1;
+    render();
+  });
+
+  weekNextBtn.addEventListener('click', () => {
+    if (weekOffset >= 0) return;
+    weekOffset += 1;
+    render();
+  });
+
+  monthPrevBtn.addEventListener('click', () => {
+    monthOffset -= 1;
+    render();
+  });
+
+  monthNextBtn.addEventListener('click', () => {
+    if (monthOffset >= 0) return;
+    monthOffset += 1;
+    render();
+  });
+
+  backTodayBtn.addEventListener('click', resetToToday);
+
+  filterButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      historyFilter = /** @type {'week' | 'month' | 'all'} */ (btn.dataset.filter);
+      renderHistory();
+    });
+  });
+
+  historyScopeToggle.addEventListener('click', () => {
+    historyFilter = historyFilter === 'all' ? 'week' : 'all';
+    renderHistory();
+  });
+
   logTodayBtn.addEventListener('click', () => {
     const key = todayKey();
     const existing = findEntry(key);
