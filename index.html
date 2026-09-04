@@ -19,6 +19,8 @@
     <header class="header">
       <h1 class="title">סטיית קלוריות</h1>
       <p class="subtitle">מעקב יומי · שבוע ישראלי · חודש לוח שנה</p>
+      <p class="sync-status" id="syncStatus" hidden aria-live="polite"></p>
+      <div class="auth-error" id="authError" hidden role="alert"></div>
     </header>
 
     <div class="back-today-wrap" id="backTodayWrap" hidden>
@@ -84,7 +86,7 @@
     </section>
 
     <footer class="footer">
-      <p>הנתונים נשמרים במכשיר בלבד · ללא שרת</p>
+      <p id="footerText">הנתונים נשמרים בענן (Supabase)</p>
     </footer>
   </div>
 
@@ -116,6 +118,7 @@
     </div>
   </div>
 
+  <script src="config.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

@@ -1,10 +1,11 @@
 /* Service Worker — offline cache for calorie deviation PWA */
-const CACHE_NAME = 'calorie-deviation-v3';
+const CACHE_NAME = 'calorie-deviation-v4';
 const ASSETS = [
   './',
   './index.html',
   './styles.css',
   './app.js',
+  './config.js',
   './manifest.webmanifest',
   './icons/icon.svg',
   './icons/icon-180.png',
@@ -28,6 +29,11 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+  const url = new URL(event.request.url);
+  if (url.hostname.includes('supabase.co') || url.hostname.includes('jsdelivr.net') || url.hostname.includes('unpkg.com')) {
+    event.respondWith(fetch(event.request));
+    return;
+  }
   event.respondWith(
     caches.match(event.request).then((cached) => {
       const fetched = fetch(event.request)
