@@ -21,18 +21,36 @@
       <p class="subtitle">מעקב יומי · שבוע ישראלי · חודש לוח שנה</p>
     </header>
 
+    <div class="back-today-wrap" id="backTodayWrap" hidden>
+      <button type="button" class="back-today-btn" id="backTodayBtn">חזרה להיום</button>
+    </div>
+
     <section class="totals" aria-live="polite">
-      <div class="total-card week">
-        <span class="total-label">סה״כ השבוע</span>
-        <span class="total-value" id="weekTotal">0</span>
-        <span class="total-unit">קק״ל</span>
-        <span class="total-range" id="weekRange"></span>
+      <div class="total-card week" id="weekCard">
+        <div class="period-nav">
+          <button type="button" class="nav-chevron" id="weekPrev" aria-label="שבוע קודם">›</button>
+          <div class="period-body">
+            <span class="total-label" id="weekLabel">סה״כ השבוע</span>
+            <span class="period-badge" id="weekBadge" hidden>שבוע קודם</span>
+            <span class="total-value" id="weekTotal">0</span>
+            <span class="total-unit">קק״ל</span>
+            <span class="total-range" id="weekRange"></span>
+          </div>
+          <button type="button" class="nav-chevron" id="weekNext" aria-label="שבוע הבא" disabled>‹</button>
+        </div>
       </div>
-      <div class="total-card month">
-        <span class="total-label">סה״כ החודש</span>
-        <span class="total-value" id="monthTotal">0</span>
-        <span class="total-unit">קק״ל</span>
-        <span class="total-range" id="monthRange"></span>
+      <div class="total-card month" id="monthCard">
+        <div class="period-nav">
+          <button type="button" class="nav-chevron" id="monthPrev" aria-label="חודש קודם">›</button>
+          <div class="period-body">
+            <span class="total-label" id="monthLabel">סה״כ החודש</span>
+            <span class="period-badge" id="monthBadge" hidden>חודש קודם</span>
+            <span class="total-value" id="monthTotal">0</span>
+            <span class="total-unit">קק״ל</span>
+            <span class="total-range" id="monthRange"></span>
+          </div>
+          <button type="button" class="nav-chevron" id="monthNext" aria-label="חודש הבא" disabled>‹</button>
+        </div>
       </div>
     </section>
 
@@ -52,6 +70,14 @@
       <div class="history-header">
         <h2>היסטוריה</h2>
         <button type="button" class="link-btn" id="addPastBtn">הוסף יום קודם</button>
+      </div>
+      <div class="history-filters">
+        <div class="segmented" role="tablist" aria-label="סינון היסטוריה">
+          <button type="button" class="segment active" role="tab" aria-selected="true" data-filter="week" id="filterWeek">שבוע</button>
+          <button type="button" class="segment" role="tab" aria-selected="false" data-filter="month" id="filterMonth">חודש</button>
+          <button type="button" class="segment" role="tab" aria-selected="false" data-filter="all" id="filterAll">הכל</button>
+        </div>
+        <button type="button" class="link-btn history-scope-toggle" id="historyScopeToggle">הצג הכל</button>
       </div>
       <ul class="history-list" id="historyList"></ul>
       <p class="empty-state" id="emptyState">אין רישומים עדיין. לחצו על «רישום היום» להתחלה.</p>
