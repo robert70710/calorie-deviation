@@ -1,5 +1,5 @@
 /* Service Worker — offline cache for calorie deviation PWA */
-const CACHE_NAME = 'calorie-deviation-v2';
+const CACHE_NAME = 'calorie-deviation-v3';
 const ASSETS = [
   './',
   './index.html',
