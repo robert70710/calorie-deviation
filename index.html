@@ -70,11 +70,18 @@
         <span>תאריך</span>
         <input type="date" id="entryDate" />
       </label>
+      <div class="field">
+        <span>כיוון</span>
+        <div class="sign-toggle" role="group" aria-label="כיוון הסטייה">
+          <button type="button" class="sign-btn" id="signOver" data-sign="1" aria-pressed="true">מעל היעד</button>
+          <button type="button" class="sign-btn" id="signUnder" data-sign="-1" aria-pressed="false">מתחת ליעד</button>
+        </div>
+      </div>
       <label class="field">
-        <span>סטייה (קק״ל)</span>
-        <input type="number" id="entryKcal" inputmode="numeric" step="1" placeholder="למשל 150 או ‎-200" />
+        <span>כמות (קק״ל)</span>
+        <input type="number" id="entryKcal" inputmode="numeric" min="0" step="1" pattern="[0-9]*" placeholder="למשל 200" />
       </label>
-      <p class="hint">חיובי = מעל היעד · שלילי = מתחת ליעד</p>
+      <p class="hint">באייפון בחרו מעל/מתחת והזינו מספר חיובי בלבד</p>
       <div class="modal-actions">
         <button type="button" class="btn-secondary" id="modalCancel">ביטול</button>
         <button type="button" class="btn-primary" id="modalSave">שמירה</button>

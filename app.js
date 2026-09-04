@@ -21,6 +21,8 @@
   const modalTitle = document.getElementById('modalTitle');
   const entryDate = document.getElementById('entryDate');
   const entryKcal = document.getElementById('entryKcal');
+  const signOver = document.getElementById('signOver');
+  const signUnder = document.getElementById('signUnder');
   const modalCancel = document.getElementById('modalCancel');
   const modalSave = document.getElementById('modalSave');
   const modalDelete = document.getElementById('modalDelete');
@@ -29,6 +31,8 @@
   let entries = loadEntries();
   /** @type {string | null} */
   let editingDate = null;
+  /** @type {1 | -1} */
+  let entrySign = 1;
 
   // ——— Storage ———
   function loadEntries() {
@@ -217,12 +221,26 @@
   }
 
   // ——— Modal ———
+  function setSign(sign) {
+    entrySign = sign === -1 ? -1 : 1;
+    signOver.setAttribute('aria-pressed', entrySign === 1 ? 'true' : 'false');
+    signUnder.setAttribute('aria-pressed', entrySign === -1 ? 'true' : 'false');
+    signOver.classList.toggle('active', entrySign === 1);
+    signUnder.classList.toggle('active', entrySign === -1);
+  }
+
   function openModal({ date, kcal, isEdit }) {
     editingDate = isEdit ? date : null;
     modalTitle.textContent = isEdit ? 'עריכת רישום' : 'רישום סטייה';
     entryDate.value = date;
     entryDate.disabled = isEdit;
-    entryKcal.value = kcal !== null && kcal !== undefined ? String(kcal) : '';
+    if (kcal !== null && kcal !== undefined) {
+      setSign(kcal < 0 ? -1 : 1);
+      entryKcal.value = String(Math.abs(kcal));
+    } else {
+      setSign(1);
+      entryKcal.value = '';
+    }
     modalDelete.hidden = !isEdit;
     modalOverlay.hidden = false;
     setTimeout(() => entryKcal.focus(), 50);
@@ -233,6 +251,7 @@
     editingDate = null;
     entryDate.disabled = false;
     entryKcal.value = '';
+    setSign(1);
   }
 
   function upsertEntry(date, kcal) {
@@ -292,6 +311,9 @@
     if (ev.target === modalOverlay) closeModal();
   });
 
+  signOver.addEventListener('click', () => setSign(1));
+  signUnder.addEventListener('click', () => setSign(-1));
+
   modalSave.addEventListener('click', () => {
     const date = entryDate.value;
     if (!date) {
@@ -299,11 +321,12 @@
       return;
     }
     const raw = entryKcal.value.trim();
-    if (raw === '' || Number.isNaN(Number(raw))) {
+    const abs = Number(raw);
+    if (raw === '' || Number.isNaN(abs) || abs < 0) {
       entryKcal.focus();
       return;
     }
-    const kcal = Math.round(Number(raw));
+    const kcal = Math.round(abs) * entrySign;
     upsertEntry(date, kcal);
     closeModal();
   });
