@@ -1,119 +1,61 @@
-# מעקב סטיית קלוריות · Calorie Deviation Tracker
+# סטיית קלוריות — אפליקציית ווב (PWA)
 
-אפליקציית iPhone מקורית ב־SwiftUI לרישום **סטייה יומית מהיעד הקלורי** (קק״ל), עם סיכום שבועי וחודשי.  
-Native SwiftUI iPhone app: log daily calorie **deviation** (kcal; + over goal, − under), with weekly and monthly totals.
+מעקב יומי אחר סטיית קלוריות מהיעד (חיובי = מעל היעד, שלילי = מתחת). מציג סה״כ שבועי (ראשון–שבת, שבוע ישראלי) וסה״כ חודשי (חודש לוח שנה). הנתונים נשמרים במכשיר בלבד (`localStorage`) — ללא שרת וללא חשבון.
 
-אין שרת, אין HealthKit, אין התחברות — הכל נשמר מקומית ב־SwiftData.  
-No backend, no HealthKit, no login — local SwiftData only.
+## קבצים
 
----
+- `index.html` — ממשק בעברית (RTL)
+- `styles.css` — עיצוב דמוי iOS
+- `app.js` — לוגיקה ושמירה מקומית
+- `manifest.webmanifest` — הגדרות PWA
+- `sw.js` — Service Worker לעבודה אופליין
+- `icons/` — אייקונים (SVG + PNG)
 
-## דרישות / Requirements
+אין צורך ב־npm או ב־build — קבצים סטטיים בלבד.
 
-- macOS עם **Xcode 15+** (מומלץ Xcode 16)
-- iOS **17.0+** (סימולטור או מכשיר)
-- בחרו את ה־Team שלכם ב־Signing & Capabilities אם מריצים על מכשיר אמיתי
+## פתיחה מקומית (בדיקה)
 
----
-
-## פתיחה ב־Xcode / Open in Xcode
-
-1. פרקו את ה־zip (אם קיבלתם ארכיון) או העתיקו את התיקייה `calorie-deviation`.
-2. פתחו את הקובץ:
-   ```
-   CalorieDeviationTracker.xcodeproj
-   ```
-3. בחרו סימולטור iPhone (או מכשיר מחובר).
-4. לחצו ▶ Run (⌘R).
-
-אם Xcode מבקש Team:  
-**Target → Signing & Capabilities → Team** → בחרו את חשבון Apple שלכם.  
-`PRODUCT_BUNDLE_IDENTIFIER` כרגע: `com.example.CalorieDeviationTracker` — שנו אותו אם צריך.
-
----
-
-## גבול השבוע (ישראל) / Week boundary (Israel)
-
-**השבוע באפליקציה הוא ראשון–שבת** (כמקובל בישראל), לא שני–ראשון.
-
-| | |
-|---|---|
-| **עברית** | סכום שבועי = כל הרישומים מתחילת **יום ראשון** (00:00 לפי שעון המכשיר) ועד סוף **שבת**. |
-| **English** | Weekly sum = all entries from **Sunday 00:00** (device local time) through **Saturday**. `Calendar.firstWeekday = 1`. |
-
-הסכום החודשי הוא לפי **חודש לוח שנה** (1–סוף החודש).  
-Monthly sum = calendar month (1st through last day).
-
----
-
-## מסכים / Screens
-
-1. **בית (ContentView)** — סכום שבועי גדול, סכום חודשי, כרטיס «היום» עם כפתור רישום/עריכה, רישומים אחרונים.
-2. **עריכת רישום (EntryEditorView)** — בחירת מעל/מתחת ליעד, מספר קק״ל, הערה אופציונלית, מחיקה.
-3. **היסטוריה (HistoryView)** — רשימת כל הרישומים; הקשה לעריכה; החלקה למחיקה.
-4. **בחירת יום קודם (PastDatePickerSheet)** — DatePicker לעריכת/הוספת יום בעבר.
-
-ממשק בעברית ו־RTL; ספרות מערביות.
-
----
-
-## איך לארוז ולהעלות ל־GitHub / Zip & upload to GitHub
-
-### יצירת zip (מ־Terminal במק)
+מתיקיית הפרויקט:
 
 ```bash
-cd /path/to/parent
-zip -r calorie-deviation.zip calorie-deviation \
-  -x "*.DS_Store" -x "*/xcuserdata/*" -x "*/DerivedData/*"
+cd calorie-deviation-web
+python3 -m http.server 8080
 ```
 
-או מהתיקייה עצמה:
+ואז בדפדפן: `http://localhost:8080`
 
-```bash
-cd calorie-deviation/..
-zip -r calorie-deviation.zip calorie-deviation -x "*.DS_Store" -x "*xcuserdata*"
-```
+(Service Worker דורש `http://` או `https://` — לא `file://`.)
 
-### העלאה ל־GitHub
+## פתיחה באייפון (Safari) והוספה למסך הבית
 
-**אופציה א׳ — אתר GitHub**
+1. העלו את התיקייה ל־GitHub Pages (ראו למטה) או פתחו את הכתובת ב־Safari באייפון.
+2. ב־Safari לחצו על כפתור **שיתוף** (□↑).
+3. גללו ובחרו **הוסף למסך הבית** (Add to Home Screen).
+4. אשרו את השם «סטיית קלוריות» ולחצו **הוסף**.
+5. האפליקציה תופיע כאייקון עצמאי ותיפתח במסך מלא (standalone).
 
-1. צרו repository חדש (ללא README אם כבר יש כאן).
-2. **Add file → Upload files** והעלו את תוכן התיקייה, או העלו את ה־zip ופרקו מקומית לפני push.
+**טיפים לאייפון:**
 
-**אופציה ב׳ — git מקומי**
+- השתמשו ב־Safari (לא בכרטיסייה בתוך אפליקציה אחרת).
+- לאחר עדכון גרסה באתר, לפעמים צריך לרענן פעם אחת ב־Safari לפני שה־Home Screen מתעדכן.
+- הנתונים נשמרים בדפדפן של המכשיר; מחיקת נתוני אתר ב־Safari תמחק גם את הרישומים.
 
-```bash
-cd calorie-deviation
-git init
-git add .
-git commit -m "Initial Calorie Deviation Tracker app"
-git branch -M main
-git remote add origin https://github.com/YOUR_USER/YOUR_REPO.git
-git push -u origin main
-```
+## פרסום ב־GitHub Pages
 
-אל תכללו `xcuserdata` או `DerivedData` ב־commit (מומלץ `.gitignore`).
+1. צרו ריפו חדש ב־GitHub והעלו אליו את **תוכן** התיקייה `calorie-deviation-web` (את הקבצים עצמם, לא תיקיית־אב מיותרת).
+2. ב־Settings → Pages: Source = **Deploy from a branch**, Branch = `main` (או `master`), Folder = `/ (root)`.
+3. לאחר כמה רגעים האתר יהיה בכתובת בסגנון:
+   `https://USERNAME.github.io/REPO_NAME/`
+4. פתחו את הכתובת ב־Safari באייפון והוסיפו למסך הבית.
 
----
+אם הפרויקט יושב בתת־תיקייה בריפו, הגדירו ב־Pages את התיקייה המתאימה, או שמרו את הקבצים בשורש הריפו.
 
-## מבנה הפרויקט / Project layout
+## שימוש באפליקציה
 
-```
-calorie-deviation/
-├── README.md
-├── CalorieDeviationTracker.xcodeproj/
-└── CalorieDeviationTracker/
-    ├── CalorieDeviationTrackerApp.swift
-    ├── Models/DailyEntry.swift
-    ├── Helpers/DateHelpers.swift, Formatters.swift
-    ├── Views/ContentView, TotalCard, EntryRow,
-    │         EntryEditorView, HistoryView, PastDatePickerSheet
-    └── Assets.xcassets/
-```
+- **רישום היום** — כפתור מרכזי לרישום/עריכת סטיית היום בקק״ל.
+- **סה״כ השבוע** — סכום מראשון עד שבת של השבוע הנוכחי.
+- **סה״כ החודש** — סכום לחודש הלוח הנוכחי.
+- **היסטוריה** — רשימת כל הרישומים; לחיצה לעריכה או מחיקה.
+- **הוסף יום קודם** — רישום לתאריך בעבר.
 
----
-
-## רישיון / License
-
-לשימוש אישי / Personal use. שנו bundle id ו־signing לפי הצורך.
+צבעים: אדום לסטייה חיובית (מעל היעד), ירוק לשלילית (מתחת ליעד).

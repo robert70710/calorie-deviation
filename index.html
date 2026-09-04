@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+  <meta name="description" content="מעקב סטיית קלוריות יומית — שבועי וחודשי" />
+  <meta name="theme-color" content="#0a84ff" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="סטיית קלוריות" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg" />
+  <link rel="apple-touch-icon" href="icons/icon-180.png" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>סטיית קלוריות</title>
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <h1 class="title">סטיית קלוריות</h1>
+      <p class="subtitle">מעקב יומי · שבוע ישראלי · חודש לוח שנה</p>
+    </header>
+
+    <section class="totals" aria-live="polite">
+      <div class="total-card week">
+        <span class="total-label">סה״כ השבוע</span>
+        <span class="total-value" id="weekTotal">0</span>
+        <span class="total-unit">קק״ל</span>
+        <span class="total-range" id="weekRange"></span>
+      </div>
+      <div class="total-card month">
+        <span class="total-label">סה״כ החודש</span>
+        <span class="total-value" id="monthTotal">0</span>
+        <span class="total-unit">קק״ל</span>
+        <span class="total-range" id="monthRange"></span>
+      </div>
+    </section>
+
+    <section class="today-card" id="todaySection">
+      <div class="today-header">
+        <h2>היום</h2>
+        <time id="todayDate" class="today-date"></time>
+      </div>
+      <div class="today-value-wrap">
+        <span class="today-value" id="todayValue">—</span>
+        <span class="today-unit">קק״ל</span>
+      </div>
+      <button type="button" class="cta" id="logTodayBtn">רישום היום</button>
+    </section>
+
+    <section class="history-section">
+      <div class="history-header">
+        <h2>היסטוריה</h2>
+        <button type="button" class="link-btn" id="addPastBtn">הוסף יום קודם</button>
+      </div>
+      <ul class="history-list" id="historyList"></ul>
+      <p class="empty-state" id="emptyState">אין רישומים עדיין. לחצו על «רישום היום» להתחלה.</p>
+    </section>
+
+    <footer class="footer">
+      <p>הנתונים נשמרים במכשיר בלבד · ללא שרת</p>
+    </footer>
+  </div>
+
+  <!-- Modal: log / edit -->
+  <div class="modal-overlay" id="modalOverlay" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h2 id="modalTitle">רישום סטייה</h2>
+      <label class="field">
+        <span>תאריך</span>
+        <input type="date" id="entryDate" />
+      </label>
+      <label class="field">
+        <span>סטייה (קק״ל)</span>
+        <input type="number" id="entryKcal" inputmode="numeric" step="1" placeholder="למשל 150 או ‎-200" />
+      </label>
+      <p class="hint">חיובי = מעל היעד · שלילי = מתחת ליעד</p>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="modalCancel">ביטול</button>
+        <button type="button" class="btn-primary" id="modalSave">שמירה</button>
+      </div>
+      <button type="button" class="btn-danger" id="modalDelete" hidden>מחיקת רישום</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
