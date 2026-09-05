@@ -1,1 +1,209 @@
-PLACEHOLDER
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+  <meta name="description" content="מעקב סטיית קלוריות יומית — שבועי וחודשי, משקל ותובנות" />
+  <meta name="theme-color" content="#0a84ff" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="סטיית קלוריות" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg" />
+  <link rel="apple-touch-icon" href="icons/icon-180.png" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>סטיית קלוריות</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script>
+</head>
+<body>
+  <div class="auth-screen" id="authScreen" hidden>
+    <div class="auth-card" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+      <h1 class="auth-brand">סטיית קלוריות</h1>
+      <h2 id="authTitle">התחברות</h2>
+      <p class="auth-mode-hint" id="authModeHint">התחברו עם האימייל והסיסמה שלכם</p>
+      <form id="authForm" class="auth-form" autocomplete="on">
+        <label class="field" id="authEmailField">
+          <span>אימייל</span>
+          <input type="email" id="authEmail" name="email" inputmode="email" autocomplete="username" required placeholder="name@example.com" />
+        </label>
+        <label class="field" id="authPasswordField">
+          <span>סיסמה</span>
+          <input type="password" id="authPassword" name="password" autocomplete="current-password" required minlength="6" placeholder="לפחות 6 תווים" />
+        </label>
+        <label class="field" id="authPassword2Field" hidden>
+          <span>סיסמה חדשה (שוב)</span>
+          <input type="password" id="authPassword2" name="password2" autocomplete="new-password" minlength="6" placeholder="אימות סיסמה" />
+        </label>
+        <button type="submit" class="btn-primary auth-submit" id="authSubmit">התחברות</button>
+      </form>
+      <p class="auth-msg" id="authMsg" hidden role="status"></p>
+      <button type="button" class="link-btn auth-toggle" id="authForgot">שכחתי סיסמה</button>
+      <button type="button" class="link-btn auth-toggle" id="authToggle">אין חשבון? הרשמה</button>
+    </div>
+  </div>
+
+  <div class="app app-locked">
+    <header class="header">
+      <div class="header-top">
+        <h1 class="title">סטיית קלוריות</h1>
+        <button type="button" class="icon-btn" id="settingsBtn" aria-label="הגדרות" title="הגדרות">⚙</button>
+      </div>
+      <p class="subtitle">מעקב יומי · שבוע ישראלי · חודש לוח שנה</p>
+      <div class="user-bar" id="userBar" hidden>
+        <span class="user-email" id="userEmail"></span>
+        <button type="button" class="logout-btn" id="logoutBtn">התנתק</button>
+      </div>
+      <p class="sync-status" id="syncStatus" hidden aria-live="polite"></p>
+      <div class="auth-error" id="authError" hidden role="alert"></div>
+    </header>
+
+    <div class="back-today-wrap" id="backTodayWrap" hidden>
+      <button type="button" class="back-today-btn" id="backTodayBtn">חזרה להיום</button>
+    </div>
+
+    <section class="totals" aria-live="polite">
+      <div class="total-card week" id="weekCard">
+        <div class="period-nav">
+          <button type="button" class="nav-chevron" id="weekPrev" aria-label="שבוע קודם">›</button>
+          <div class="period-body">
+            <span class="total-label" id="weekLabel">סה״כ השבוע</span>
+            <span class="period-badge" id="weekBadge" hidden>שבוע קודם</span>
+            <span class="total-value" id="weekTotal">0</span>
+            <span class="total-unit">קק״ל</span>
+            <span class="total-range" id="weekRange"></span>
+          </div>
+          <button type="button" class="nav-chevron" id="weekNext" aria-label="שבוע הבא" disabled>‹</button>
+        </div>
+      </div>
+      <div class="total-card month" id="monthCard">
+        <div class="period-nav">
+          <button type="button" class="nav-chevron" id="monthPrev" aria-label="חודש קודם">›</button>
+          <div class="period-body">
+            <span class="total-label" id="monthLabel">סה״כ החודש</span>
+            <span class="period-badge" id="monthBadge" hidden>חודש קודם</span>
+            <span class="total-value" id="monthTotal">0</span>
+            <span class="total-unit">קק״ל</span>
+            <span class="total-range" id="monthRange"></span>
+          </div>
+          <button type="button" class="nav-chevron" id="monthNext" aria-label="חודש הבא" disabled>‹</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="today-card" id="todaySection">
+      <div class="today-header">
+        <h2>היום</h2>
+        <time id="todayDate" class="today-date"></time>
+      </div>
+      <div class="today-value-wrap">
+        <span class="today-value" id="todayValue">—</span>
+        <span class="today-unit">קק״ל</span>
+      </div>
+      <div class="today-weight-row">
+        <span class="today-weight-label">משקל</span>
+        <span class="today-weight-value" id="todayWeight">—</span>
+        <span class="today-weight-unit">ק״ג</span>
+      </div>
+      <button type="button" class="cta" id="logTodayBtn">רישום היום</button>
+    </section>
+
+    <section class="insights-section" id="insightsSection">
+      <div class="insights-header">
+        <h2>תובנות וגרפים</h2>
+        <div class="segmented insights-scope" role="tablist" aria-label="טווח תובנות">
+          <button type="button" class="segment active" role="tab" aria-selected="true" data-insights="week" id="insightsWeek">שבוע</button>
+          <button type="button" class="segment" role="tab" aria-selected="false" data-insights="month" id="insightsMonth">חודש</button>
+        </div>
+      </div>
+      <p class="insights-period" id="insightsPeriodLabel"></p>
+      <p class="insights-hint">סכום סטיות ÷ קק״ל לק״ג (ברירת מחדל 7700) = תחזית משקל. יעד גרעון יומי × ימים = יעד מצטבר.</p>
+      <div class="chart-wrap">
+        <canvas id="periodChart" aria-label="גרף סטיות יומיות"></canvas>
+      </div>
+      <div class="insight-cards" id="insightCards"></div>
+      <div class="week-compare" id="weekCompareBlock">
+        <h3>השוואת שבועות</h3>
+        <p class="insights-hint">ממוצע משקל בשבוע הנבחר מול השבוע הקודם לו.</p>
+        <div class="insight-cards" id="weekCompareCards"></div>
+      </div>
+    </section>
+
+    <section class="history-section">
+      <div class="history-header">
+        <h2>היסטוריה</h2>
+        <button type="button" class="link-btn" id="addPastBtn">הוסף יום קודם</button>
+      </div>
+      <div class="history-filters">
+        <div class="segmented" role="tablist" aria-label="סינון היסטוריה">
+          <button type="button" class="segment active" role="tab" aria-selected="true" data-filter="week" id="filterWeek">שבוע</button>
+          <button type="button" class="segment" role="tab" aria-selected="false" data-filter="month" id="filterMonth">חודש</button>
+          <button type="button" class="segment" role="tab" aria-selected="false" data-filter="all" id="filterAll">הכל</button>
+        </div>
+        <button type="button" class="link-btn history-scope-toggle" id="historyScopeToggle">הצג הכל</button>
+      </div>
+      <ul class="history-list" id="historyList"></ul>
+      <p class="empty-state" id="emptyState">יש להתחבר כדי לראות רישומים.</p>
+    </section>
+
+    <footer class="footer">
+      <p id="footerText">יש להתחבר כדי לשמור נתונים בענן</p>
+    </footer>
+  </div>
+
+  <div class="modal-overlay" id="settingsOverlay" hidden>
+    <div class="modal settings-modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+      <h2 id="settingsTitle">הגדרות</h2>
+      <label class="field">
+        <span>יעד גרעון יומי (קק״ל)</span>
+        <input type="number" id="settingDeficit" inputmode="numeric" step="1" placeholder="500 או -500" />
+      </label>
+      <p class="hint">הזינו מספר חיובי (למשל 500) או שלילי (−500). נשמר כערך שלילי: −500 = יעד של 500 קק״ל גרעון ביום.</p>
+      <label class="field">
+        <span>קק״ל לק״ג (לחישוב תחזית)</span>
+        <input type="number" id="settingKcalPerKg" inputmode="numeric" step="1" placeholder="7700" />
+      </label>
+      <p class="hint">ברירת מחדל 7700. משמש לתחזית שינוי משקל מתסטיות קלוריות.</p>
+      <p class="auth-msg" id="settingsMsg" hidden role="status"></p>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="settingsCancel">סגור</button>
+        <button type="button" class="btn-primary" id="settingsSave">שמירה</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modalOverlay" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h2 id="modalTitle">רישום סטייה</h2>
+      <label class="field">
+        <span>תאריך</span>
+        <input type="date" id="entryDate" />
+      </label>
+      <div class="field">
+        <span>כיוון</span>
+        <div class="sign-toggle" role="group" aria-label="כיוון הסטייה">
+          <button type="button" class="sign-btn" id="signOver" data-sign="1" aria-pressed="true">מעל היעד</button>
+          <button type="button" class="sign-btn" id="signUnder" data-sign="-1" aria-pressed="false">מתחת ליעד</button>
+        </div>
+      </div>
+      <label class="field">
+        <span>כמות (קק״ל)</span>
+        <input type="number" id="entryKcal" inputmode="numeric" min="0" step="1" pattern="[0-9]*" placeholder="למשל 200" />
+      </label>
+      <label class="field">
+        <span>משקל (ק״ג) — אופציונלי</span>
+        <input type="number" id="entryWeight" inputmode="decimal" min="0" step="0.1" placeholder="למשל 72.5" />
+      </label>
+      <p class="hint">באייפון בחרו מעל/מתחת והזינו מספר חיובי בלבד. משקל נשמר בנפרד ליום.</p>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="modalCancel">ביטול</button>
+        <button type="button" class="btn-primary" id="modalSave">שמירה</button>
+      </div>
+      <button type="button" class="btn-danger" id="modalDelete" hidden>מחיקת רישום קלוריות</button>
+      <button type="button" class="btn-danger btn-danger-secondary" id="modalDeleteWeight" hidden>מחיקת משקל ליום זה</button>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="app-loader.js"></script>
+</body>
+</html>
