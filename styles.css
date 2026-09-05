@@ -1,4 +1,4 @@
-/* Re-export last good stylesheet, then sync/auth status additions */
+/* Base stylesheet via jsDelivr pin + local auth/sync overlays */
 @import url("https://cdn.jsdelivr.net/gh/robert70710/calorie-deviation@084527432c33fc936dc4941818c701567c433c18/styles.css");
 
 /* Sync / auth status */
@@ -26,5 +26,193 @@
 @media (prefers-color-scheme: dark) {
   .auth-error {
     background: rgba(255, 59, 48, 0.2);
+  }
+}
+
+/* ——— Auth screen (required login) ——— */
+.auth-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(16px + var(--safe-top)) 16px calc(16px + var(--safe-bottom));
+  background: rgba(242, 242, 247, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.auth-screen[hidden] {
+  display: none !important;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 380px;
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 28px 20px 22px;
+  text-align: center;
+}
+
+.auth-brand {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+}
+
+.auth-card h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.auth-mode-hint {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin-bottom: 18px;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: right;
+}
+
+.auth-form .field input {
+  width: 100%;
+  font-size: 1rem;
+  padding: 12px 14px;
+  border: 1px solid var(--separator);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--text);
+  direction: ltr;
+  text-align: left;
+}
+
+.auth-form .field input:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.2);
+}
+
+.auth-submit {
+  margin-top: 4px;
+  width: 100%;
+  min-height: 48px;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  background: var(--blue);
+  color: #fff;
+  cursor: pointer;
+}
+
+.auth-submit:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.auth-submit:not(:disabled):active {
+  background: var(--blue-pressed);
+}
+
+.auth-msg {
+  margin-top: 14px;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(60, 60, 67, 0.08);
+  color: var(--text);
+}
+
+.auth-msg.busy { color: var(--blue); }
+.auth-msg.ok {
+  color: var(--green);
+  background: rgba(52, 199, 89, 0.12);
+}
+.auth-msg.error {
+  color: var(--red);
+  background: rgba(255, 59, 48, 0.12);
+}
+
+.auth-toggle {
+  margin-top: 14px;
+  font-size: 0.875rem;
+}
+
+.app-locked > :not(.header):not(.footer) {
+  pointer-events: none;
+  opacity: 0.35;
+  filter: grayscale(0.2);
+}
+
+.app-locked .header .title,
+.app-locked .header .subtitle {
+  opacity: 1;
+}
+
+/* User bar (logged-in) */
+.user-bar {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.user-email {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  direction: ltr;
+}
+
+.logout-btn {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--red);
+  background: rgba(255, 59, 48, 0.1);
+  border: none;
+  border-radius: 999px;
+  padding: 6px 14px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.logout-btn:active {
+  opacity: 0.75;
+}
+
+.logout-btn:disabled {
+  opacity: 0.5;
+}
+
+@media (prefers-color-scheme: dark) {
+  .auth-screen {
+    background: rgba(0, 0, 0, 0.72);
+  }
+  .auth-form .field input {
+    background: #1c1c1e;
+    border-color: rgba(84, 84, 88, 0.65);
+  }
+  .auth-msg {
+    background: rgba(255, 255, 255, 0.08);
+  }
+  .auth-msg.ok { background: rgba(52, 199, 89, 0.18); }
+  .auth-msg.error { background: rgba(255, 59, 48, 0.2); }
+  .logout-btn {
+    background: rgba(255, 59, 48, 0.18);
   }
 }
