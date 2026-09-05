@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  const N = 7;
+  const N = 15;
   Promise.all(
     Array.from({ length: N }, (_, i) =>
       fetch('./app.c.' + i + '.js').then((r) => {
