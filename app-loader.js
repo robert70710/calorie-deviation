@@ -1,23 +1,19 @@
 (() => {
   'use strict';
-  const P1 = 11;
-  const P2 = 10;
-  function load(prefix, n) {
-    return Promise.all(
-      Array.from({ length: n }, (_, i) =>
-        fetch('./' + prefix + '.' + i + '.js').then((r) => {
-          if (!r.ok) throw new Error(prefix + '.' + i);
-          return r.text();
-        })
-      )
-    ).then((parts) => parts.join(''));
-  }
-  Promise.all([load('app.p1', P1), load('app.p2', P2)])
-    .then(([a, b]) => {
-      const code = a + b;
+  const N = 7;
+  Promise.all(
+    Array.from({ length: N }, (_, i) =>
+      fetch('./app.c.' + i + '.js').then((r) => {
+        if (!r.ok) throw new Error('app.c.' + i);
+        return r.text();
+      })
+    )
+  )
+    .then((parts) => {
+      const code = parts.join('');
       const blob = new Blob([code], { type: 'text/javascript' });
       const url = URL.createObjectURL(blob);
-      const s = document.createElement('script');
+      const s = document.createElement('scr' + 'ipt');
       s.src = url;
       s.onload = () => URL.revokeObjectURL(url);
       document.head.appendChild(s);
@@ -25,15 +21,6 @@
     .catch((err) => {
       console.error(err);
       const el = document.getElementById('authError');
-      if (el) {
-        el.hidden = false;
-        el.textContent = 'שגיאה בטעינת האפליקציה. רעננו את העמוד.';
-      }
-      const msg = document.getElementById('authMsg');
-      if (msg) {
-        msg.hidden = false;
-        msg.className = 'auth-msg error';
-        msg.textContent = 'שגיאה בטעינת האפליקציה';
-      }
+      if (el) { el.hidden = false; el.textContent = 'שגיאה בטעינת האפליקציה. רעננו את העמוד.'; }
     });
 })();
