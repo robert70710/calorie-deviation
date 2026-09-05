@@ -1,3 +1,56 @@
-click",(()=>{R-=1,Ee()})),g.addEventListener("click",(()=>{R>=0||(R+=1,Ee())})),y.addEventListener("click",(()=>{U-=1,Ee()})),f.addEventListener("click",(()=>{U>=0||(U+=1,Ee())})),E.addEventListener("click",(function(){R=0,U=0,Ee()})),C.forEach((e=>{e.addEventListener("click",(()=>{K=e.dataset.filter,he()}))})),D.addEventListener("click",(()=>{K="all"===K?"week":"all",he()})),k.addEventListener("click",(()=>{const e=Z(),t=le(e);
-we({date:e,kcal:t?t.kcal:null,isEdit:!!t})})),I.addEventListener("click",(()=>{const e=new Date;e.setDate(e.getDate()-1),we({date:Q(e),kcal:null,isEdit:!1})})),v.addEventListener("click",(e=>{const t=e.target.closest(".history-item");if(!t)return;const n=t.dataset.date,a=le(n);a&&we({date:n,kcal:a.kcal,isEdit:!0})})),v.addEventListener("keydown",(e=>{if("Enter"!==e.key&&" "!==e.key)return;const t=e.target.closest(".history-item");t&&(e.preventDefault(),t.click())})),T.addEventListener("click",ke),x.addEventListener("click",(e=>{e.target===x&&ke()})),A.addEventListener("click",(()=>pe(1))),M.addEventListener("click",(()=>pe(-1))),F.addEventListener("click",(()=>{const e=$.value;
-if(!e)return void $.focus();const t=_.value.trim(),n=Number(t);if(""===t||Number.isNaN(n)||n<0)return void _.focus();const a=Math.round(n)*P;ke(),ve(e,a)})),Y.addEventListener("click",(()=>{const e=j||$.value;e&&confirm("למחוק את הרישום לתאריך זה?")&&(ke(),be(e))})),document.addE
+סטייה';
+    entryDate.value = date;
+    entryDate.disabled = isEdit;
+    if (kcal !== null && kcal !== undefined) {
+      setSign(kcal < 0 ? -1 : 1);
+      entryKcal.value = String(Math.abs(kcal));
+    } else {
+      setSign(1);
+      entryKcal.value = '';
+    }
+    modalDelete.hidden = !isEdit;
+    modalOverlay.hidden = false;
+    setTimeout(() => entryKcal.focus(), 50);
+  }
+
+  function closeModal() {
+    modalOverlay.hidden = true;
+    editingDate = null;
+    entryDate.disabled = false;
+    entryKcal.value = '';
+    setSign(1);
+  }
+
+  async function upsertEntry(date, kcal) {
+    const prev = entries.map((e) => ({ ...e }));
+    const idx = entries.findIndex((e) => e.date === date);
+    if (idx >= 0) {
+      entries[idx] = { date, kcal };
+    } else {
+      entries.push({ date, kcal });
+    }
+    render();
+    syncBusy = true;
+    setSyncStatus('שומר…', 'busy');
+    try {
+      await upsertEntryRemote(date, kcal);
+      setSyncStatus('נשמר בענן', 'ok');
+    } catch (err) {
+      entries = prev;
+      render();
+      setSyncStatus('שגיאת שמירה', 'error');
+      console.error(err);
+      alert('לא הצלחנו לשמור את הרישום. בדקו את החיבור ונסו שוב.');
+    } finally {
+      syncBusy = false;
+    }
+  }
+
+  async function deleteEntry(date) {
+    const prev = entries.map((e) => ({ ...e }));
+    entries = entries.filter((e) => e.date !== date);
+    render();
+    syncBusy = true;
+    setSyncStatus('מוחק…', 'busy');
+    try {
+      await d

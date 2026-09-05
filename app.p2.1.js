@@ -1,3 +1,50 @@
-essed",1===P?"true":"false"),M.setAttribute("aria-pressed",-1===P?"true":"false"),A.classList.toggle("active",1===P),M.classList.toggle("active",-1===P)}function we({date:e,kcal:t,isEdit:n}){z?(j=n?e:null,N.textContent=n?"עריכת רישום":"רישום סטייה",$.value=e,$.disabled=n,null!=t?(pe(t<0?-1:1),_.value=String(Math.abs(t))):(pe(1),_.value=""),Y.hidden=!n,x.hidden=!1,setTimeout((()=>_.focus()),50)):H("ממתינים לחיבור…","busy")}function ke(){x.hidden=!0,j=null,$.disabled=!1,_.value="",pe(1)}async function ve(e,t){const n=O.map((e=>({...e}))),a=O.findIndex((t=>t.date===e));
-a>=0?O[a]={date:e,kcal:t}:O.push({date:e,kcal:t}),Ee(),q=!0,H("שומר…","busy");try{await async function(e,t){const{error:n}=await W.from("calorie_entries").upsert({entry_date:e,kcal:t,updated_at:(new Date).toISOString()},{onConflict:"user_id,entry_date"});if(n)throw n}(e,t),H("נשמר בענן","ok")}catch(e){O=n,Ee(),H("שגיאת שמירה","error"),console.error(e),alert("לא הצלחנו לשמור את הרישום. בדקו את החיבור ונסו שוב.")}finally{q=!1}}async function be(e){const t=O.map((e=>({...e})));O=O.filter((t=>t.date!==e)),Ee(),q=!0,H("מוחק…","busy");
-try{await async function(e){const{error:t}=await W.from("calorie_entries").delete().eq("entry_date",e);if(t)throw t}(e),H("נמחק","ok")}catch(e){O=t,Ee(),H("שגיאת מחיקה","error"),console.error(e),alert("לא הצלחנו למחוק את הרישום. בדקו את החיבור ונסו שוב.")}finally{q=!1}}m.addEventListener("
+y';
+      const d = parseDateKey(e.date);
+      dayEl.textContent = e.date === today ? 'היום' : `יום ${HEB_DAYS[d.getDay()]}`;
+
+      const dateEl = document.createElement('span');
+      dateEl.className = 'history-date';
+      dateEl.textContent = `${d.getDate()} ב${HEB_MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+
+      left.appendChild(dayEl);
+      left.appendChild(dateEl);
+
+      const kcalEl = document.createElement('span');
+      kcalEl.className = 'history-kcal ' + signClass(e.kcal);
+      kcalEl.textContent = formatSigned(e.kcal);
+
+      li.appendChild(left);
+      li.appendChild(kcalEl);
+      historyList.appendChild(li);
+    }
+  }
+
+  function render() {
+    renderTotals();
+    renderToday();
+    renderHistory();
+  }
+
+  function resetToToday() {
+    weekOffset = 0;
+    monthOffset = 0;
+    render();
+  }
+
+  // ——— Modal ———
+  function setSign(sign) {
+    entrySign = sign === -1 ? -1 : 1;
+    signOver.setAttribute('aria-pressed', entrySign === 1 ? 'true' : 'false');
+    signUnder.setAttribute('aria-pressed', entrySign === -1 ? 'true' : 'false');
+    signOver.classList.toggle('active', entrySign === 1);
+    signUnder.classList.toggle('active', entrySign === -1);
+  }
+
+  function openModal({ date, kcal, isEdit }) {
+    if (!ready) {
+      setSyncStatus('יש להתחבר תחילה', 'error');
+      showAuthScreen();
+      return;
+    }
+    editingDate = isEdit ? date : null;
+    modalTitle.textContent = isEdit ? 'עריכת רישום' : 'רישום 

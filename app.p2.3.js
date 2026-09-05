@@ -1,3 +1,60 @@
-ventListener("keydown",(e=>{"Escape"!==e.key||x.hidden||ke()})),"serviceWorker"in navigator&&window.addEventListener("load",(()=>{navigator.serviceWorker.register("./sw.js").catch((()=>{}))})),async function(){Ee();const e=window.CALORIE_CONFIG;
-if(e&&e.supabaseUrl&&e.supabaseAnonKey){try{await async function(){window.supabase&&"function"==typeof window.supabase.createClient||await new Promise((function(e,t){var n=document.createElement("script");n.src="https://unpkg.com/@supabase/supabase-js@2.49.8/dist/umd/supabase.js",n.async=!0,n.onload=function(){window.supabase&&"function"==typeof window.supabase.createClient?e():t(new Error("supabase global missing"))},n.onerror=function(){t(new Error("CDN load failed"))},document.head.appendChild(n)}))}()}catch(e){return void J("לא נטען supabase-js מה־CDN. בדקו את החיבור לרשת.")}W=window.supabase.createClient(e.supabaseUrl,e.supabaseAnonKey,{auth:{persistSession:!0,autoRefreshToken:!0,storage:window.localStorage,detectSessionInUrl:!1}}),H("מתחבר…","busy");
-try{await async function(){const{data:e,error:t}=await W.auth.getSession();if(t)throw t;if(e.session)return e.session;const{data:n,error:a}=await W.auth.signInAnonymously();if(a){const e=a.message||a.error_code||"";if(/anonymous/i.test(e)||422===a.status||a.code&&String(a.code).includes("anonymous")||/Anonymous sign-ins are disabled/i.test(String(a.message)))throw Object.assign(new Er
+eleteEntryRemote(date);
+      setSyncStatus('נמחק', 'ok');
+    } catch (err) {
+      entries = prev;
+      render();
+      setSyncStatus('שגיאת מחיקה', 'error');
+      console.error(err);
+      alert('לא הצלחנו למחוק את הרישום. בדקו את החיבור ונסו שוב.');
+    } finally {
+      syncBusy = false;
+    }
+  }
+
+  async function enterAuthenticatedSession(session) {
+    const email = (session && session.user && session.user.email) || '';
+    hideAuthError();
+    setAuthMsg('');
+    hideAuthScreen();
+    updateUserBar(email);
+    setSyncStatus('טוען רישומים…', 'busy');
+    entries = await fetchEntriesFromDb();
+    await migrateLocalIfNeeded();
+    ready = true;
+    if (footerTextEl) {
+      footerTextEl.textContent = 'הנתונים נשמרים בענן (Supabase) · מחובר לפי משתמש';
+    }
+    setSyncStatus('מסונכרן', 'ok');
+    render();
+  }
+
+  async function leaveSession() {
+    ready = false;
+    entries = [];
+    updateUserBar(null);
+    showAuthScreen();
+    if (footerTextEl) {
+      footerTextEl.textContent = 'יש להתחבר כדי לשמור נתונים בענן';
+    }
+    setSyncStatus('');
+    render();
+  }
+
+  // ——— Events ———
+  weekPrevBtn.addEventListener('click', () => {
+    weekOffset -= 1;
+    render();
+  });
+
+  weekNextBtn.addEventListener('click', () => {
+    if (weekOffset >= 0) return;
+    weekOffset += 1;
+    render();
+  });
+
+  monthPrevBtn.addEventListener('click', () => {
+    monthOffset -= 1;
+    render();
+  });
+
+  monthNextBtn.addEventListener('cli

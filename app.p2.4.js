@@ -1,1 +1,51 @@
-ror("ANON_DISABLED"),{cause:a});throw a}return n.session}(),L&&(L.hidden=!0,L.textContent=""),H("טוען רישומים…","busy"),O=await ue(),await me(),z=!0,S&&(S.textContent="הנתונים נשמרים בענן (Supabase) · סשן אנונימי במכשיר"),H("מסונכרן","ok"),Ee()}catch(e){z=!1,console.error(e),e&&"ANON_DISABLED"===e.message?(J("כניסה אנונימית כבויה בפרויקט. יש להפעיל Authentication → Providers → Anonymous בלוח הבקרה של Supabase, ואז לרענן את העמוד."),H("נדרשת הפעלת Anonymous","error")):(J("לא הצלחנו להתחבר ל־Supabase. בדקו את החיבור ונסו לרענן."),H("שגיאת חיבור","error")),Ee()}}else J("חסרה הגדרת Supabase (config.js).")}()})();
+ck', () => {
+    if (monthOffset >= 0) return;
+    monthOffset += 1;
+    render();
+  });
+
+  backTodayBtn.addEventListener('click', resetToToday);
+
+  filterButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      historyFilter = /** @type {'week' | 'month' | 'all'} */ (btn.dataset.filter);
+      renderHistory();
+    });
+  });
+
+  historyScopeToggle.addEventListener('click', () => {
+    historyFilter = historyFilter === 'all' ? 'week' : 'all';
+    renderHistory();
+  });
+
+  logTodayBtn.addEventListener('click', () => {
+    const key = todayKey();
+    const existing = findEntry(key);
+    openModal({
+      date: key,
+      kcal: existing ? existing.kcal : null,
+      isEdit: !!existing,
+    });
+  });
+
+  addPastBtn.addEventListener('click', () => {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    openModal({ date: toDateKey(yesterday), kcal: null, isEdit: false });
+  });
+
+  historyList.addEventListener('click', (ev) => {
+    const item = ev.target.closest('.history-item');
+    if (!item) return;
+    const date = item.dataset.date;
+    const existing = findEntry(date);
+    if (!existing) return;
+    openModal({ date, kcal: existing.kcal, isEdit: true });
+  });
+
+  historyList.addEventListener('keydown', (ev) => {
+    if (ev.key !== 'Enter' && ev.key !== ' ') return;
+    const item = ev.target.closest('.history-item');
+    if (!item) return;
+    ev.preventDefault();
+    item.click()
