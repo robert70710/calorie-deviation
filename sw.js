@@ -1,19 +1,11 @@
 /* Service Worker — offline cache for calorie deviation PWA */
-const CACHE_NAME = 'calorie-deviation-v4';
+const CACHE_NAME = 'calorie-deviation-v5';
 const ASSETS = [
   './',
   './index.html',
   './styles.css',
   './app-loader.js',
-  './app.p1.0.js',
-  './app.p1.1.js',
-  './app.p1.2.js',
-  './app.p1.3.js',
-  './app.p2.0.js',
-  './app.p2.1.js',
-  './app.p2.2.js',
-  './app.p2.3.js',
-  './app.p2.4.js',
+  './app.js',
   './config.js',
   './manifest.webmanifest',
   './icons/icon.svg',

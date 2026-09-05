@@ -15,10 +15,36 @@
   <title>סטיית קלוריות</title>
 </head>
 <body>
-  <div class="app">
+  <!-- Auth overlay (required login) -->
+  <div class="auth-screen" id="authScreen" hidden>
+    <div class="auth-card" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+      <h1 class="auth-brand">סטיית קלוריות</h1>
+      <h2 id="authTitle">התחברות</h2>
+      <p class="auth-mode-hint" id="authModeHint">התחברו עם האימייל והסיסמה שלכם</p>
+      <form id="authForm" class="auth-form" autocomplete="on">
+        <label class="field">
+          <span>אימייל</span>
+          <input type="email" id="authEmail" name="email" inputmode="email" autocomplete="username" required placeholder="name@example.com" />
+        </label>
+        <label class="field">
+          <span>סיסמה</span>
+          <input type="password" id="authPassword" name="password" autocomplete="current-password" required minlength="6" placeholder="לפחות 6 תווים" />
+        </label>
+        <button type="submit" class="btn-primary auth-submit" id="authSubmit">התחברות</button>
+      </form>
+      <p class="auth-msg" id="authMsg" hidden role="status"></p>
+      <button type="button" class="link-btn auth-toggle" id="authToggle">אין חשבון? הרשמה</button>
+    </div>
+  </div>
+
+  <div class="app app-locked">
     <header class="header">
       <h1 class="title">סטיית קלוריות</h1>
       <p class="subtitle">מעקב יומי · שבוע ישראלי · חודש לוח שנה</p>
+      <div class="user-bar" id="userBar" hidden>
+        <span class="user-email" id="userEmail"></span>
+        <button type="button" class="logout-btn" id="logoutBtn">התנתק</button>
+      </div>
       <p class="sync-status" id="syncStatus" hidden aria-live="polite"></p>
       <div class="auth-error" id="authError" hidden role="alert"></div>
     </header>
@@ -82,11 +108,11 @@
         <button type="button" class="link-btn history-scope-toggle" id="historyScopeToggle">הצג הכל</button>
       </div>
       <ul class="history-list" id="historyList"></ul>
-      <p class="empty-state" id="emptyState">אין רישומים עדיין. לחצו על «רישום היום» להתחלה.</p>
+      <p class="empty-state" id="emptyState">יש להתחבר כדי לראות רישומים.</p>
     </section>
 
     <footer class="footer">
-      <p id="footerText">הנתונים נשמרים בענן (Supabase)</p>
+      <p id="footerText">יש להתחבר כדי לשמור נתונים בענן</p>
     </footer>
   </div>
 
