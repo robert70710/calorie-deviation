@@ -1,3 +1,43 @@
-const e=function(){if("all"===K)return[...O];if("week"===K){const e=ee(ne());return O.filter((t=>ie(t.date,e.start,e.end)))}const e=te(ae());return O.filter((t=>ie(t.date,e.start,e.end)))}().sort(((e,t)=>e.date<t.date?1:e.date>t.date?-1:0));if(v.innerHTML="",0===e.length)return v.classList.add("is-empty"),b.classList.add("visible"),void(z?0===O.length?b.textContent="אין רישומים עדיין. לחצו על «רישום היום» להתחלה.":b.textContent="week"===K?"אין רישומים בשבוע הנבחר.":"month"===K?"אין רישומים בחודש הנבחר.":"אין רישומים להצגה.":b.textContent="טוען נתונים…");
-v.classList.remove("is-empty"),b.classList.remove("visible");const t=Z();for(const n of e){const e=document.createElement("li");e.className="history-item",e.dataset.date=n.date,e.setAttribute("role","button"),e.tabIndex=0;const a=document.createElement("div");a.className="history-item-left";const o=document.createElement("span");o.className="history-day";const r=X(n.date);o.textContent=n.date===t?"היום":`יום ${oe[r.getDay()]}`;const s=document.createElement("span");s.className="history-date",s.textContent=`${r.getDate()} ב${re[r.getMonth()]} ${r.getFullYear()}`,a.appendChild(o),a.appendChild(s);
-const d=document.createElement("span");d.className="history-kcal "+de(n.kcal),d.textContent=se(n.kcal),e.appendChild(a),e.appendChild(d),v.appendChild(e)}}function Ee(){ye(),fe(),he()}function pe(e){P=-1===e?-1:1,A.setAttribute("aria-pr
+se {
+      historyScopeToggle.textContent = 'הצג הכל';
+    }
+  }
+
+  function renderHistory() {
+    renderHistoryFilters();
+    const sorted = filteredEntries().sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+    historyList.innerHTML = '';
+
+    if (sorted.length === 0) {
+      historyList.classList.add('is-empty');
+      emptyState.classList.add('visible');
+      if (!ready) {
+        emptyState.textContent = currentUserEmail ? 'טוען נתונים…' : 'יש להתחבר כדי לראות רישומים.';
+      } else if (entries.length === 0) {
+        emptyState.textContent = 'אין רישומים עדיין. לחצו על «רישום היום» להתחלה.';
+      } else if (historyFilter === 'week') {
+        emptyState.textContent = 'אין רישומים בשבוע הנבחר.';
+      } else if (historyFilter === 'month') {
+        emptyState.textContent = 'אין רישומים בחודש הנבחר.';
+      } else {
+        emptyState.textContent = 'אין רישומים להצגה.';
+      }
+      return;
+    }
+
+    historyList.classList.remove('is-empty');
+    emptyState.classList.remove('visible');
+
+    const today = todayKey();
+    for (const e of sorted) {
+      const li = document.createElement('li');
+      li.className = 'history-item';
+      li.dataset.date = e.date;
+      li.setAttribute('role', 'button');
+      li.tabIndex = 0;
+
+      const left = document.createElement('div');
+      left.className = 'history-item-left';
+
+      const dayEl = document.createElement('span');
+      dayEl.className = 'history-da
