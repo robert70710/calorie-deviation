@@ -1,2 +1,48 @@
-me="total-value "+de(t)}function ye(){const e=ee(ne()),t=ae(),m=te(t),y=ce(e.start,e.end),E=ce(m.start,m.end);var p,w;ge(n,y),ge(a,E),o.textContent=(p=e.start,w=e.end,p.getMonth()===w.getMonth()&&p.getFullYear()===w.getFullYear()?`${p.getDate()}–${w.getDate()} ב${re[p.getMonth()]}`:`${p.getDate()} ב${re[p.getMonth()]} – ${w.getDate()} ב${re[w.getMonth()]}`),r.textContent=`${re[t.getMonth()]} ${t.getFullYear()}`,0===R?(s.textContent="סה״כ השבוע",i.hidden=!0,l.classList.remove("is-past")):(s.textContent="סה״כ שבוע",i.hidden=!1,i.textContent=-1===R?"שבוע קודם":`לפני ${-R} שבועות`,l.classList.add("is-past")),0===U?(d.textContent="סה״כ החודש",c.hidden=!0,u.classList.remove("is-past")):(d.textContent="סה״כ חודש",c.hidden=!1,c.textContent=-1===U?"חודש קודם":`לפני ${-U} חודשים`,u.classList.add("is-past")),g.disabled=R>=0,f.disabled=U>=0,h.hidden=!(0!==R||0!==U)}function fe(){const e=Z();
-p.textContent=function(e){const t=X(e);return`${oe[t.getDay()]}, ${t.getDate()} ב${re[t.getMonth()]} ${t.getFullYear()}`}(e);const t=le(e);t?(w.textContent=se(t.kcal),w.className="today-value "+de(t.kcal),k.textContent="עריכת היום"):(w.textContent="—",w.className="today-value empty",k.textContent="רישום היום")}function he(){C.forEach((e=>{const t=e.dataset.filter===K;e.classList.toggle("active",t),e.setAttribute("aria-selected",t?"true":"false")})),D.textContent="all"===K?"רק השבוע הנבחר":"הצג הכל";
+l.textContent = '';
+      }, 1800);
+    }
+  }
+
+  function showAuthError(message) {
+    if (!authErrorEl) return;
+    authErrorEl.hidden = false;
+    authErrorEl.textContent = message;
+  }
+
+  function hideAuthError() {
+    if (!authErrorEl) return;
+    authErrorEl.hidden = true;
+    authErrorEl.textContent = '';
+  }
+
+  function setAuthMsg(message, kind = '') {
+    if (!authMsg) return;
+    authMsg.textContent = message || '';
+    authMsg.hidden = !message;
+    authMsg.className = 'auth-msg' + (kind ? ' ' + kind : '');
+  }
+
+  function isEmailUser(session) {
+    if (!session || !session.user) return false;
+    const u = session.user;
+    if (u.is_anonymous === true) return false;
+    const identities = u.identities || [];
+    if (identities.length && identities.every((id) => id.provider === 'anonymous')) return false;
+    return !!(u.email || (identities.length && identities.some((id) => id.provider === 'email')));
+  }
+
+  function shortEmailLabel(email) {
+    if (!email) return 'משתמש';
+    if (email.length <= 28) return email;
+    const at = email.indexOf('@');
+    if (at <= 0) return email.slice(0, 24) + '…';
+    const local = email.slice(0, at);
+    const domain = email.slice(at);
+    if (local.length <= 12) return email;
+    return local.slice(0, 10) + '…' + domain;
+  }
+
+  function showAuthScreen() {
+    if (authScreen) authScreen.hidden = false;
+    if (appRoot) appRoot.classList.add('app-locked');
+    if (userBar) userBar.h

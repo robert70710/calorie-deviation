@@ -1,3 +1,27 @@
-ument.getElementById("signUnder"),T=document.getElementById("modalCancel"),F=document.getElementById("modalSave"),Y=document.getElementById("modalDelete");
-let O=[],j=null,P=1,R=0,U=0,K="week",W=null,q=!1,z=!1,G=null;function H(e,t=""){B&&(B.textContent=e||"",B.hidden=!e,B.className="sync-status"+(t?" "+t:""),G&&clearTimeout(G),e&&"ok"===t&&(G=setTimeout((()=>{B.hidden=!0,B.textContent=""}),1800)))}function J(e){L&&(L.hidden=!1,L.textContent=e)}function V(e){return String(e).padStart(2,"0")}function Q(e){return`${e.getFullYear()}-${V(e.getMonth()+1)}-${V(e.getDate())}`}function X(e){const[t,n,a]=e.split("-").map(Number);return new Date(t,n-1,a)}function Z(){return Q(new Date)}function ee(e=new Date){const t=new Date(e.getFullYear(),e.getMonth(),e.getDate()),n=t.getDay(),a=new Date(t);
-a.setDate(t.getDate()-n);const o=new Date(a);return o.setDate(a.getDate()+6),{start:a,end:o}}function te(e=new Date){return{start:new Date(e.getFullYear(),e.getMonth(),1),end:new Date(e.getFullYear(),e.getMonth()+1,0)}}function ne(){return function(e,t){const n=new Date(e.getFullYear(),e.getMonth(),e.getDate());return n.setDate(n.getDate()+t),n}(new Date,7*R)}function ae(){return e=new Date,t=U,new Date(e.getFullYear(),e.getMonth()+t,1);var e,t}const oe=["ראשון","שני","שלישי","רביעי","חמישי","שישי","שבת"],re=["ינואר","פברואר","מרץ","אפריל","מאי","יוני","יולי","אוגוסט","ספטמבר","אוקטובר","נובמבר","
+= document.getElementById('historyList');
+  const emptyState = document.getElementById('emptyState');
+  const addPastBtn = document.getElementById('addPastBtn');
+  const historyScopeToggle = document.getElementById('historyScopeToggle');
+  const filterButtons = document.querySelectorAll('.segment[data-filter]');
+  const syncStatusEl = document.getElementById('syncStatus');
+  const authErrorEl = document.getElementById('authError');
+  const footerTextEl = document.getElementById('footerText');
+  const userBar = document.getElementById('userBar');
+  const userEmailEl = document.getElementById('userEmail');
+  const logoutBtn = document.getElementById('logoutBtn');
+
+  const authScreen = document.getElementById('authScreen');
+  const authForm = document.getElementById('authForm');
+  const authEmail = document.getElementById('authEmail');
+  const authPassword = document.getElementById('authPassword');
+  const authSubmit = document.getElementById('authSubmit');
+  const authToggle = document.getElementById('authToggle');
+  const authTitle = document.getElementById('authTitle');
+  const authMsg = document.getElementById('authMsg');
+  const authModeHint = document.getElementById('authModeHint');
+
+  const modalOverlay = document.getElementById('modalOverlay');
+  const modalTitle = document.getElementById('modalTitle');
+  const entryDate = document.getElementById('entryDate');
+  const entryKcal = document.getElementById('entryKcal');
+  co
